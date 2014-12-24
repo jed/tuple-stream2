@@ -4,30 +4,29 @@ var concat = require("concat-stream")
 var TupleStream = require("./")
 
 var streams = {
-  a: through.obj(),
-  b: through.obj()
+  before: through.obj(),
+  after: through.obj()
 }
 
-streams.a.write({id: 1})
-streams.a.write({id: 2})
-streams.a.write({id: 5})
-streams.a.end()
+streams.before.write({id: 1, name: "Moe"})
+streams.before.write({id: 2, name: "Shemp"})
+streams.before.write({id: 3, name: "Larry"})
+streams.before.end()
 
-streams.b.write({id: 3})
-streams.b.write({id: 4})
-streams.b.write({id: 5})
-streams.b.end()
+streams.after.write({id: 1, name: "Moe"})
+streams.after.write({id: 3, name: "Larry"})
+streams.after.write({id: 4, name: "Curly"})
+streams.after.end()
 
-function comparator(a, b){ return a.id - b.id }
+function comparator(a, b){ return !a ? 1 : !b ? -1 : a.id - b.id }
 
 var stream = TupleStream(streams, {comparator: comparator})
 var write = concat(function(tuples) {
   assert.deepEqual(tuples, [
-    {a: {id: 1}},
-    {a: {id: 2}},
-    {b: {id: 3}},
-    {b: {id: 4}},
-    {a: {id: 5}, b: {id: 5}}
+    {before: {id: 1, name: "Moe"}, after: {id: 1, name: "Moe"}},
+    {before: {id: 2, name: "Shemp"}},
+    {before: {id: 3, name: "Larry"}, after: {id: 3, name: "Larry"}},
+    {after: {id: 4, name: "Curly"}}
   ])
 })
 
