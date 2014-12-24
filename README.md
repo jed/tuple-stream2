@@ -30,7 +30,7 @@ streams.b.end()
 
 function comparator(a, b){ return a.id - b.id }
 
-var tuples = TupleStream(streams, comparator)
+var tuples = TupleStream(streams, {comparator: comparator})
 
 tuples.on("data", console.log)
 
