@@ -1,6 +1,6 @@
 {
   "name": "tuple-stream2",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Aligns multiple streams in one",
   "main": "index.js",
   "scripts": {
