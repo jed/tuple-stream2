@@ -44,12 +44,14 @@ tuples.on("data", console.log)
 API
 ---
 
-### TupleStream(streams, [comparator])
+### TupleStream(streams, [options])
 
 Returns a readable stream.
 
 `streams` is a required object or array of readable streams, each of which must already be sorted according to the `comparator`. To use an unsorted stream, first pipe it through something like [sort-stream2](https://github.com/jed/sort-stream2).
 
-`comparator` is an optional function used to sort streams. It follows the specification used for [Array.prototype.sort](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort), and defaults to `function(){ return 0 }`.
+`options` is an optional object that can contain the following key:
+
+- `comparator`: an optional function used to sort streams. It follows the specification used for [Array.prototype.sort](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/sort), and defaults to `function(){ return 0 }`.
 
 The returned stream emits values with the same keys as `streams`, but with stream _data_ instead of streams for the values.

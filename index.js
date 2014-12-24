@@ -2,14 +2,15 @@ var through = require("through2")
 var async = require("async")
 var read = require("stream-read")
 
-module.exports = function(streams, comparator) {
+module.exports = function(streams, options) {
+  if (!options) options = {}
+
   var ctor = streams.constructor
+  var comparator = options.comparator || function(){ return 0 }
   var tuples = through.obj()
   var sources = Object.keys(streams).map(function(key) {
     return {key: key, stream: streams[key]}
   })
-
-  if (!comparator) comparator = function(){ return 0 }
 
   check()
 

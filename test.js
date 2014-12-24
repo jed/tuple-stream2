@@ -20,7 +20,7 @@ streams.b.end()
 
 function comparator(a, b){ return a.id - b.id }
 
-var stream = TupleStream(streams, comparator)
+var stream = TupleStream(streams, {comparator: comparator})
 var write = concat(function(tuples) {
   assert.deepEqual(tuples, [
     {a: {id: 1}},
