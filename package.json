@@ -1,7 +1,7 @@
 {
   "name": "tuple-stream2",
   "version": "1.1.3",
-  "description": "Aligns multiple streams in one",
+  "description": "Merges multiple streams into an aligned tuple stream",
   "main": "index.js",
   "scripts": {
     "test": "node test.js"
@@ -17,8 +17,6 @@
   },
   "homepage": "https://github.com/jed/tuple-stream2",
   "dependencies": {
-    "async": "^0.9.0",
-    "stream-read": "^1.1.2",
     "through2": "^0.6.3"
   },
   "devDependencies": {

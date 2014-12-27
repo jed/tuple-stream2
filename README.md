@@ -3,7 +3,7 @@ tuple-stream2
 
 [![build status](https://secure.travis-ci.org/jed/tuple-stream2.svg)](http://travis-ci.org/jed/tuple-stream2)
 
-Merges multiple sorted streams into an aligned tuple stream.
+Merges multiple streams into an aligned tuple stream.
 
 Example
 -------
@@ -35,8 +35,8 @@ var tuples = TupleStream(stooges, {comparator: comparator})
 tuples.on("data", console.log)
 
 //  {before: {id: 1, name: "Moe"  }, after: {id: 1, name: "Moe"}  },
-//  {before: {id: 2, name: "Shemp"}                               },
 //  {before: {id: 3, name: "Larry"}, after: {id: 3, name: "Larry"}},
+//  {before: {id: 2, name: "Shemp"}                               },
 //  {                                after: {id: 4, name: "Curly"}}
 ```
 
@@ -47,7 +47,7 @@ API
 
 Returns a readable stream.
 
-`streams` is a required object or array of readable streams, each of which must already be sorted according to the `comparator`. To use an unsorted stream, first pipe it through something like [sort-stream2](https://github.com/jed/sort-stream2).
+`streams` is a required object or array of readable streams.
 
 `options` is an optional object that can contain the following key:
 

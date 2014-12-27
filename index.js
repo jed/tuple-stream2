@@ -1,59 +1,65 @@
 var through = require("through2")
-var async = require("async")
-var read = require("stream-read")
 
 module.exports = function(streams, options) {
   if (!options) options = {}
 
   var ctor = streams.constructor
   var comparator = options.comparator || function(){ return 0 }
-  var tuples = through.obj()
-  var sources = Object.keys(streams).map(function(key) {
-    return {key: key, stream: streams[key]}
+  var tuples = []
+  var complete = {}
+  var stream = through.obj()
+  var streamKeys = Object.keys(streams)
+
+  streamKeys.forEach(function(key) {
+    var write = through.obj(onData, onEnd)
+
+    streams[key]
+      .pipe(write)
+      .pipe(stream, {end: false})
+
+    function onData(data, enc, cb) {
+      search(0, tuples.length - 1)
+
+      function search(start, end) {
+        var middle = Math.floor((start + end) / 2)
+        var tuple
+        var ref
+        var comparison
+
+        if (start > end) {
+          tuple = new ctor
+          tuples.splice(start, 0, tuple)
+        }
+
+        else {
+          tuple = tuples[middle]
+          ref = tuple[Object.keys(tuple)[0]]
+          comparison = comparator(data, ref)
+
+          if (comparison > 0) return search(start, middle - 1)
+          if (comparison < 0) return search(middle + 1, end)
+        }
+
+        tuple[key] = data
+
+        if (Object.keys(tuple).length < streamKeys.length) return cb()
+
+        tuples.splice(middle, 1)
+        cb(null, tuple)
+      }
+    }
+
+    function onEnd(cb) {
+      complete[key] = true
+
+      if (Object.keys(complete).length < streamKeys.length) return cb()
+
+      tuples.forEach(stream.write, stream)
+      stream.end()
+
+      cb()
+    }
   })
 
-  check()
-
-  return tuples
-
-  function check() {
-    async.each(sources, onSource, onDone)
-
-    function onSource(source, cb) {
-      if ("value" in source) cb()
-
-      else read(source.stream, function(err, value) {
-        if (err) return cb(err)
-
-        source.value = value
-        cb()
-      })
-    }
-
-    function onDone(err) {
-      var done = sources.every(function(source) {
-        return source.value === null
-      })
-
-      if (done) return tuples.end()
-
-      var first = sources
-        .slice(0)
-        .sort(function(a, b){ return comparator(a.value, b.value) })
-        .shift()
-
-      var tuple = sources
-        .filter(function(source) {
-          return comparator(source.value, first.value) == 0
-        })
-        .reduce(function(acc, source) {
-          acc[source.key] = source.value
-          delete source.value
-          return acc
-        }, new ctor)
-
-      tuples.write(tuple)
-      check()
-    }
-  }
+  return stream
 }
